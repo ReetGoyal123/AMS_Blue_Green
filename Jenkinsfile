@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "attendance-system"
         DOCKER_TAG   = "${env.BUILD_NUMBER}"
-        PYTHON       = 'C:\Users\shash\AppData\Local\Programs\Python\Python313\python.exe'
+        PYTHON       = 'C:/Users/shash/AppData/Local/Programs/Python/Python313/python.exe'
     }
 
     stages {
