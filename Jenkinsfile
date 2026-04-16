@@ -42,9 +42,9 @@ pipeline {
         stage('Deploy Green') {
             steps {
                 bat '''
-                    FOR /F "tokens=*" %%i IN ('docker ps -q -f name=%GREEN_NAME%') DO docker stop %%i
-                    FOR /F "tokens=*" %%i IN ('docker ps -aq -f name=%GREEN_NAME%') DO docker rm %%i
-                    docker run -d --name %GREEN_NAME% -p %GREEN_PORT%:8501 %IMAGE_NAME%:%BUILD_NUMBER%
+                   FOR /F "tokens=*" %%i IN ('docker ps -q --filter "name=^%GREEN_NAME%$"') DO docker stop %%i
+                   FOR /F "tokens=*" %%i IN ('docker ps -aq --filter "name=^%GREEN_NAME%$"') DO docker rm %%i
+                   docker run -d --name %GREEN_NAME% -p %GREEN_PORT%:8501 %IMAGE_NAME%:%BUILD_NUMBER% 
                 '''
             }
         }
@@ -62,21 +62,22 @@ pipeline {
 
         stage('Switch Traffic to Green') {
             steps {
-        powershell """
-        \$conf = Get-Content C:\\nginx\\nginx-1.26.3\\conf\\nginx.conf
-        \$conf = \$conf -replace 'server localhost:\\d+;', 'server localhost:%GREEN_PORT%;'
-        \$conf | Set-Content C:\\nginx\\nginx-1.26.3\\conf\\nginx.conf
-        """
-        bat 'C:\\nginx\\nginx-1.26.3\\nginx.exe -s reload'
-    }
-}
+                powershell """
+                \$conf = Get-Content C:\\Users\\shash\\Downloads\\nginx-1.30.0\\nginx-1.30.0\\conf\\nginx.conf
+                \$conf = \$conf -replace 'server localhost:\\d+;', 'server localhost:%GREEN_PORT%;'
+                \$conf | Set-Content C:\\Users\\shash\\Downloads\\nginx-1.30.0\\nginx-1.30.0\\conf\\nginx.conf
+                """
+                bat 'C:\\Users\\shash\\Downloads\\nginx-1.30.0\\nginx-1.30.0\\nginx.exe -p C:\\Users\\shash\\Downloads\\nginx-1.30.0\\nginx-1.30.0 -s reload'
+            }
+        }
         stage('Stop Blue') {
             steps {
-                bat '''
-                docker stop %BLUE_NAME%
-                docker rm %BLUE_NAME%
-                '''
-            }
+        bat '''
+            docker stop %BLUE_NAME% 2>nul || echo No blue to stop
+            docker rm %BLUE_NAME% 2>nul || echo No blue to remove
+            docker rename %GREEN_NAME% %BLUE_NAME%
+        '''
+    }
         }
 
     }
