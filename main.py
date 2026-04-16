@@ -912,6 +912,10 @@ def main():
     db.init_database()
     init_session_state()
 
+    # ✅ DOCKER VERSION INDICATOR (VISIBLE AFTER LOGIN)
+    if st.session_state.authenticated:
+        st.success("New Version Running 🚀")
+
     if not st.session_state.authenticated:
         signup_page() if st.session_state.page == 'signup' else login_page()
         return
