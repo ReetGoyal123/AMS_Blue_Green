@@ -18,7 +18,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 bat '''
-                    %PYTHON_EXE% -m venv venv
+                    %PYTHON% -m venv venv
                     venv\\Scripts\\pip install --upgrade pip
                     venv\\Scripts\\pip install -r requirements.txt
                 '''
