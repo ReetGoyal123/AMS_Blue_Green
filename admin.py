@@ -1,7 +1,7 @@
 """
 Run this once to create/reset the admin account.
 Place it in the same folder as your attendance.db and run:
-    python create_admin.py
+    python admin.py
 """
 import sqlite3
 import hashlib

@@ -60,15 +60,19 @@ pipeline {
             }
         }
 
-        stage('Switch Blue-Green') {
+        stage('Switch Traffic to Green') {
+            steps {
+                powershell """
+                (Get-Content C:\\nginx\\nginx-1.26.3\\conf\\nginx.conf) -replace '8501','8502' | Set-Content C:\\nginx\\nginx-1.26.3\\conf\\nginx.conf
+                """
+                bat 'C:\\nginx\\nginx-1.26.3\\nginx.exe -s reload'
+            }
+}
+        stage('Stop Blue') {
             steps {
                 bat '''
-                    FOR /F "tokens=*" %%i IN ('docker ps -q -f name=%BLUE_NAME%') DO docker stop %%i
-                    FOR /F "tokens=*" %%i IN ('docker ps -aq -f name=%BLUE_NAME%') DO docker rm %%i
-                    docker stop %GREEN_NAME%
-                    docker rm %GREEN_NAME%
-                    docker run -d --name %BLUE_NAME% -p %BLUE_PORT%:8501 %IMAGE_NAME%:%BUILD_NUMBER%
-                    echo Switched! App now live on port %BLUE_PORT%
+                docker stop %BLUE_NAME%
+                docker rm %BLUE_NAME%
                 '''
             }
         }

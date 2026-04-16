@@ -11,7 +11,7 @@ import auth
 import db
 
 st.set_page_config(
-    page_title="Attendance Management System",
+    page_title="AMS",
     page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
